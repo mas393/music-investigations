@@ -14,13 +14,13 @@ from playsound import playsound
 
 
 def get_sinusoid(freq: float, time: np.linspace) -> np.linspace:
-    return np.sin(2*np.pi*freq*t)
+    return np.sin(2*np.pi*freq*time)
     
 def add_partials(freq: float, time: np.linspace, sound: np.linspace , num_partials: int) -> np.linspace:
-    partialstep = lambda x: 2**x
+    #partialstep = lambda x: 2**x
     diminish = lambda x: 2**x
     for i in range(1, num_partials):
-        sound += get_sinusoid(freq*partialstep(i), time)/partialstep(i)/diminish(i)
+        sound += get_sinusoid(freq*i, time)/diminish(i)
     sound = sound/sound.max()
     return sound
 
@@ -71,7 +71,7 @@ def main():
         
         
         #produce a major chord along with the root of the beats created by the major chord
-        
+        '''
         data = major_chord(BASEFREQUENCY, t, chordstep=i/STEPS)
         data = sound_decay(BASEFREQUENCY, t, data)
         filename = "{}_{}major.wav".format(i, STEPS)
@@ -82,22 +82,22 @@ def main():
         data = sound_decay(BASEFREQUENCY, t, data)
         filename = "{}_{}major_beats.wav".format(i, STEPS)
         write(filename, SAMPLERATE, data)
-        
+        '''
         
         # produce a tone with i amount of partials
         # nth partial is sin(2**n*f) with amplitude 1/2**n/2**n (1/2**n is only linear)
-        '''
+
         data = get_sinusoid(BASEFREQUENCY, t)
         data = add_partials(BASEFREQUENCY, t, data, i)
         data = sound_decay(BASEFREQUENCY, t, data)
         filename = "{}_harmonics.wav".format(i)
         FILES.append(filename)
         write(filename, SAMPLERATE, data)
-        '''
+
         
         # produces major and minor chords for a base over an octave
             
-            '''
+        '''
         #data = major_chord(BASEFREQUENCY, t, chordstep=i/STEPS, partials = True)
         data = nth_degree_major_chord(freq = BASEFREQUENCY, time = t, chordterms=3, chordstep=i/STEPS)
         data = sound_decay(BASEFREQUENCY, t, data)
@@ -143,6 +143,23 @@ def main():
         filename = "{}_terms_major".format(i) 
         write(filename, SAMPLERATE, data)
         '''
+
+        '''
+        # does not work as intended
+        # changing the sampleing rate to produce different sound waves through alliasing of a single freq
+        # producing the step amount of harmonics of the base freq
+        # i.e fsample - fin = fout
+        FREQ = 3520
+        SAMP = FREQ/2**i + FREQ
+        print(SAMP)
+        data = get_sinusoid(FREQ, t)
+        filename = "{}_hz_using_samp_rate_{}".format(FREQ/2**i, int(SAMP))
+        write(filename, int(SAMP), data)
+        '''
+
+        
+
+        
         
     #for f in FILES:
     #playsound(FILES[3])
